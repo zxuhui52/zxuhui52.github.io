@@ -3,7 +3,7 @@ title: "Anmoly Detection with DBSCAN and Isolation Forest"
 author: Xuhui Zeng
 date: now
 categories: 
-  - classification
+  - anomaly detection
   - machine learning
   - code
 jupyter: python3
