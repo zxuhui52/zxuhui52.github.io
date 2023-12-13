@@ -10,7 +10,7 @@ jupyter: python3
 format: html
 ---
 
-Interesting fact that Naive Bayes is different from the majority of other classification algorithms. Most of the classification algorithms, such as decision trees, KNN, logistic regression, support vector machines, etc., they are **discriminative** methods.at and th e output target $Y = f()X$ or a conditional distribution $P(Y|X)$. However, Naive Bayes is a **generative** method, meaning it directly determines the joint distribution $P(X,Y)$ between the features X and target Y. Then it uses $P(Y|X) = P(X,Y)/P(X)$ to derive the results.
+Interesting fact that Naive Bayes is different from the majority of other classification algorithms. Most of the classification algorithms, such as decision trees, KNN, logistic regression, support vector machines, etc., they are **discriminative** methods.at and th e output target $Y = f(X)$ or a conditional distribution $P(Y|X)$. However, Naive Bayes is a **generative** method, meaning it directly determines the joint distribution $P(X,Y)$ between the features X and target Y. Then it uses $P(Y|X) = P(X,Y)/P(X)$ to derive the results.
 
 Naive Bayes is based on **Bayes' Theorem**. It is called "naive" because it makes the assumption that the features used to describe an observation are conditionally independent, given the class label. This assumption simplifies the computation and is where the term "naive" comes from. Being "naive" does not mean it does not produce a good performance. In fact, Naive Bayesis particularly effective when dealing with categorical data, such as text classification tasks, where the features represent word occurrences or frequencies. It is commonly used in natural language processing (NLP) applications like spam filtering and sentiment analysis.
 
