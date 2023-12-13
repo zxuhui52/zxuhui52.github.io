@@ -1,0 +1,88 @@
+---
+title: "Anmoly Detection with DBSCAN and Isolation Forest"
+author: Xuhui Zeng
+date: now
+categories: 
+  - classification
+  - machine learning
+  - code
+jupyter: python3
+format: html
+---
+
+Anomaly detection, also known as outlier detection, is a machine learning task that involves identifying instances or patterns in data that do not conform to the expected behavior. Anomalies are observations that deviate significantly from the majority of the data, and detecting them is crucial in various scenarios where abnormal behavior may indicate potential issues, fraud, or errors. Commonly used anomaly detection algorithms can be generally categorized into three type as follows.
+
+The first type involves **statistical methods** to handle outlier data. This approach typically constructs a probability distribution model and calculates the probability that an object conforms to this model. Objects with low probabilities are then regarded as anomalies. For instance, in feature engineering, the RobustScaler method utilizes the quantile distribution of data features. During the scaling of data feature values, it segments the data based on quantiles and only considers the middle segment for scaling, such as using data between the 25th and 75th percentiles. This helps mitigate the impact of outlier data.
+
+The second type employs **clustering-based methods** for anomaly detection. This approach is intuitive since many clustering algorithms are based on the distribution of data features. If, after clustering, certain clusters exhibit significantly fewer data samples than others, and the distribution of feature means within these clusters differs significantly from other clusters, most of the sample points in these clusters are often anomalies. For example, the DBSCAN density clustering algorithm can do simultaneous clustering and anomaly detection.
+
+The third type utilizes **specialized** anomaly detection algorithms. Unlike clustering algorithms where anomaly detection is an additional feature, these algorithms are specifically designed for detecting anomalies. Representative examples of such algorithms include One-Class SVM and Isolation Forest.
+
+Let's go through some **DBSCAN** as a clustering-based method, and **Isolation Forest** as a specialized anomaly detection algorithm, to get an idea of how they work. Both of them are very typical and commonly used in anomaly detection tasks.
+
+DBSCAN is a powerful clustering algorithm known for its ability to discover clusters of varying shapes and handle noise in data.While DBSCAN is traditionally used for clustering, its unique approach to identifying dense regions can also be leveraged for anomaly detection. Anomalies, being instances that do not conform to the dense cluster patterns, are naturally singled out by DBSCAN. In this context, points that remain **unassigned** or assigned to **small clusters or noise clusters** can be considered anomalies.
+
+The following example shows that DBSCAN completes clustering and outlier detection simultaneously.
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.datasets import make_blobs
+from sklearn.cluster import DBSCAN
+
+# Generate synthetic data with outliers
+X, _ = make_blobs(n_samples=300, centers=3, cluster_std=1.0, random_state=42)
+outliers = np.array([[0, 0], [6, 6]])  # Add outliers
+X = np.concatenate([X, outliers])
+
+# Apply DBSCAN for anomaly detection
+dbscan = DBSCAN(eps=1.5, min_samples=5)
+labels = dbscan.fit_predict(X)
+
+# Visualize the results
+plt.figure(figsize=(10, 8))
+
+# Plot the original data points
+sns.scatterplot(x=X[:, 0], y=X[:, 1], hue=labels, palette='viridis', s=50, alpha=0.8, legend=False)
+
+# Highlight anomalies (points labeled as -1 by DBSCAN)
+anomalies = X[labels == -1]
+sns.scatterplot(x=anomalies[:, 0], y=anomalies[:, 1], color='red', marker='X', s=100, label='Anomalies')
+
+# plt.title('DBSCAN for Anomaly Detection')
+plt.title('DBSCAN for Anomaly Detection')
+plt.legend()
+plt.show()
+```
+
+Isolation Forest is a robust and efficient anomaly detection algorithm that operates by **isolating anomalies** instead of explicitly identifying normal instances. It is based on the idea that anomalies are likely to be more isolated, requiring fewer splits in a random decision tree to be separated from the majority of the data. Isolation Forest is particularly effective in high-dimensional spaces and can handle both **global and local anomalies**.
+
+The following example shows that Isolation Forest separates out anomalies from the majority of the data set. It is not doing clustering like DBSCAN.
+
+```{python}
+from sklearn.ensemble import IsolationForest
+
+# Generate synthetic data with outliers
+X, _ = make_blobs(n_samples=300, centers=3, cluster_std=1.0, random_state=42)
+outliers = np.array([[0, 0], [6, 6]])  # Add outliers
+X = np.concatenate([X, outliers])
+
+# Apply Isolation Forest for anomaly detection
+isolation_forest = IsolationForest(contamination=0.05, random_state=42)
+labels = isolation_forest.fit_predict(X)
+
+# Visualize the results
+plt.figure(figsize=(10, 8))
+
+# Plot the original data points
+sns.scatterplot(x=X[:, 0], y=X[:, 1], hue=labels, palette='viridis', s=50, alpha=0.8, legend=False)
+
+# Highlight anomalies (points labeled as -1 by Isolation Forest)
+anomalies = X[labels == -1]
+sns.scatterplot(x=anomalies[:, 0], y=anomalies[:, 1], color='red', marker='X', s=100, label='Anomalies')
+
+plt.title('Isolation Forest for Anomaly Detection')
+plt.legend()
+plt.show()
+```
