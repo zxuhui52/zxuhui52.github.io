@@ -3,6 +3,7 @@
     "listing": "/index.html",
     "items": [
       "/posts/classification/index.html",
+      "/posts/linear_nonlinear_regression/index.html",
       "/posts/post-with-code/index.html",
       "/posts/welcome/index.html"
     ]
