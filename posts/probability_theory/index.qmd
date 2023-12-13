@@ -1,0 +1,87 @@
+---
+title: "Theory behind Naive Bayes Classifier"
+author: Xuhui Zeng
+date: now
+categories: 
+  - probability theory
+  - machine learning
+  - code
+jupyter: python3
+format: html
+---
+
+Interesting fact that Naive Bayes is different from the majority of other classification algorithms. Most of the classification algorithms, such as decision trees, KNN, logistic regression, support vector machines, etc., they are **discriminative** methods.at and th e output target $Y = f()X$ or a conditional distribution $P(Y|X)$. However, Naive Bayes is a **generative** method, meaning it directly determines the joint distribution $P(X,Y)$ between the features X and target Y. Then it uses $P(Y|X) = P(X,Y)/P(X)$ to derive the results.
+
+Naive Bayes is based on **Bayes' Theorem**. It is called "naive" because it makes the assumption that the features used to describe an observation are conditionally independent, given the class label. This assumption simplifies the computation and is where the term "naive" comes from. Being "naive" does not mean it does not produce a good performance. In fact, Naive Bayesis particularly effective when dealing with categorical data, such as text classification tasks, where the features represent word occurrences or frequencies. It is commonly used in natural language processing (NLP) applications like spam filtering and sentiment analysis.
+
+To understand how a Naive Bayes classifier works, we need to start with the Bayes' Theorem. It is a fundamental principle in probability theory that describes the probability of an event based on prior knowledge of conditions that might be related to the event, also known as **conditional probability**. It is named after the Reverend Thomas Bayes, an 18th-century statistician and theologian. The formula for Bayes' Theorem is as follows:
+
+$P(A│B)=\frac{P(A)P(B|A)}{P(B)}$
+
+Where:
+
+-   $P(A│B)$ is the probability of event A occurring given that event B has occurred.
+-   $P(B│A)$ is the probability of event B occurring given that event A has occurred.
+-   $P(A)$ is the prior probability of event A.
+-   $P(B)$ is the prior probability of event B.
+
+The general form of the Naive Bayes classifier for a class $C_k$ and features $x_1, x_2, ..., x_n$ is:
+
+$P(C_k | x_1, x_2, ..., x_n) = \frac{P(x_1) \cdot P(x_2) \cdot ... \cdot P(x_n) \cdot P(C_k)}{P(x_1 | C_k) \cdot P(x_2 | C_k) \cdot ... \cdot P(x_n | C_k)}​$
+
+The key assumption here is that the features $x_1, x_2, ..., x_n$ are conditionally independent given the class label $C_k$.
+
+The key assumption here is that the features $x_1, x_2, ..., x_n$ are conditionally independent given the class label $C_k$. The prior probability of each class $C_k$ can be calculated by counting the occurrences of each class and dividing by the total number of examples. The conditional probability $P(x_i|C_k)$ can be calculated by counting the occurrences of $x_i$ within samples labeled as $C_k$ and divided by the total number of samples labeled as $C_k$.
+
+To make a predition for a new unlabeled sample with features $X$, the classifier first calculate the posterior probability for each class $C_k$ using the Bayes' Theorem:
+
+$P(C_k | X) = \frac{P(X | C_k) \cdot P(C_k)}{P(X)}$
+
+Then it makes a decision by assigning class label $Y$ that maximizes the posterior probability $P(C_k | X)$:
+
+$Y = \arg\max_{C_k} P(C_k | X)$
+
+Let's see how a Naive Bayes classifier works on the breast cancer dataset:
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import confusion_matrix, classification_report
+
+# Load the breast cancer dataset
+data = load_breast_cancer()
+X = data.data
+y = data.target
+
+# Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Train a Gaussian Naive Bayes classifier
+nb_classifier = GaussianNB()
+nb_classifier.fit(X_train, y_train)
+
+# Make predictions on the test set
+y_pred = nb_classifier.predict(X_test)
+
+# Generate a confusion matrix and classification report
+conf_matrix = confusion_matrix(y_test, y_pred)
+classification_rep = classification_report(y_test, y_pred)
+
+# Plot confusion matrix
+plt.figure(figsize=(8, 6))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', cbar=False,
+            xticklabels=data.target_names, yticklabels=data.target_names)
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+plt.title('Confusion Matrix')
+plt.show()
+
+# Display the classification report
+print("Classification Report:\n", classification_rep)
+```
+
+The Naive Bayes classifier using GaussianNB (assuming prior probability follows a normal distribution) can do an excellent job in this classification task with high precision and recall at the same time.
